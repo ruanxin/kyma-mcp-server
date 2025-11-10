@@ -1,8 +1,8 @@
 package main
 
 import (
-	"context"
 	"log"
+	"net/http"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
@@ -38,8 +38,19 @@ func main() {
 	log.Println("MCP tools registered.")
 
 	// 6. Run the server
-	log.Println("Starting Kubernetes MCP server over stdio...")
-	if err := server.Run(context.Background(), &mcp.StdioTransport{}); err != nil {
+	handler := mcp.NewStreamableHTTPHandler(
+		func(*http.Request) *mcp.Server {
+			return server
+		},
+		&mcp.StreamableHTTPOptions{},
+	)
+
+	// 7. Register the handler with the default http server
+	http.Handle("/mcp", handler) // Your server will be available at the /mcp endpoint
+
+	// 8. Run the standard Go HTTP server on port 8080
+	log.Println("Starting Kubernetes MCP server on :8080/mcp ...")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
