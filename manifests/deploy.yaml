@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kyma-mcp-server
+  namespace: default # <-- Must match your other resources
+  labels:
+    app: kyma-mcp-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kyma-mcp-server # This must match the pod template's labels
+  template:
+    metadata:
+      labels:
+        app: kyma-mcp-server # This must match the selector's labels
+    spec:
+      # CRITICAL: This tells the pod to use the ServiceAccount
+      # which has the permissions we granted.
+      serviceAccountName: kyma-mcp-sa
+
+      containers:
+        - name: server
+          #
+          # !!! IMPORTANT !!!
+          # Change this to the image you built and pushed to your registry
+          #
+          image: ghcr.io/ruanxin/kyma-mcp-server:latest
+          imagePullPolicy: Always # Good for development
+
+          # Resource limits are important, even for an MVP
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "250m"
