@@ -15,7 +15,7 @@ import (
 
 func main() {
 	// 1. Initialize the Kubernetes client
-	clientset, err := k8s.NewInClusterClient()
+	clientset, dynamicClient, mapper, err := k8s.NewInClusterClient()
 	if err != nil {
 		log.Fatalf("Failed to create Kubernetes client: %v", err)
 	}
@@ -23,9 +23,11 @@ func main() {
 
 	// 2. Initialize the service layer
 	podService := services.NewPodService(clientset)
+	unstructuredService := services.NewUnstructedService(clientset, dynamicClient, mapper)
 
 	// 3. Initialize the handler layer
 	podHandlers := handler.NewPodHandler(podService)
+	unstructuredHandlers := handler.NewUnstructedHandler(unstructuredService)
 
 	// 4. Create the MCP server
 	server := mcp.NewServer(&mcp.Implementation{
@@ -35,6 +37,7 @@ func main() {
 
 	// 5. Register all tools
 	tools.RegisterPodTools(server, podHandlers)
+	tools.RegisterUnstructedTools(server, unstructuredHandlers)
 	log.Println("MCP tools registered.")
 
 	// 6. Run the server

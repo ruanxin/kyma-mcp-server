@@ -11,10 +11,10 @@ import (
 )
 
 type PodService struct {
-	clnt *kubernetes.Clientset
+	clnt kubernetes.Interface
 }
 
-func NewPodService(clnt *kubernetes.Clientset) *PodService {
+func NewPodService(clnt kubernetes.Interface) *PodService {
 	return &PodService{clnt: clnt}
 }
 

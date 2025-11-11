@@ -10,10 +10,10 @@ import (
 )
 
 type NamespaceService struct {
-	clnt *kubernetes.Clientset
+	clnt kubernetes.Interface
 }
 
-func NewNamespaceService(clnt *kubernetes.Clientset) *NamespaceService {
+func NewNamespaceService(clnt kubernetes.Interface) *NamespaceService {
 	return &NamespaceService{clnt: clnt}
 }
 
