@@ -5,14 +5,24 @@ metadata:
   labels:
     app: kyma-mcp-server
 rules:
-  - apiGroups: [""] # Core API group
-    resources: ["pods"]
+  - apiGroups: ["*"] # Core API group
+    resources: ["*"]
     verbs:
       - "create"
       - "list"
       - "get"
       - "watch"
       - "delete"
+      - "patch"
+  - apiGroups: ["apps"] # Apps API group
+    resources: ["deployments", "replicasets"]
+    verbs:
+      - "create"
+      - "list"
+      - "get"
+      - "watch"
+      - "delete"
+      - "patch"
   - apiGroups: [""] # Core API group
     resources: ["namespaces"]
     verbs:
