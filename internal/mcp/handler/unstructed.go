@@ -55,18 +55,10 @@ func (h *UnstructuredHandler) ListResources(ctx context.Context, req *mcp.CallTo
 	// Convert unstructured list to our output format
 	items := make([]types.ResourceItem, 0, len(result.Items))
 	for _, item := range result.Items {
-		// Get status summary (simplified)
-		status := "Unknown"
-		if statusField, found, _ := unstructured.NestedString(item.Object, "status", "phase"); found && statusField != "" {
-			status = statusField
-		} else if readyCondition, found, _ := unstructured.NestedSlice(item.Object, "status", "conditions"); found && len(readyCondition) > 0 {
-			if condMap, ok := readyCondition[0].(map[string]interface{}); ok {
-				if condType, ok := condMap["type"].(string); ok && condType == "Ready" {
-					if condStatus, ok := condMap["status"].(string); ok {
-						status = condStatus
-					}
-				}
-			}
+		// Get full status subresource
+		var statusObj map[string]interface{}
+		if status, found, _ := unstructured.NestedMap(item.Object, "status"); found {
+			statusObj = status
 		}
 
 		resourceItem := types.ResourceItem{
@@ -75,7 +67,7 @@ func (h *UnstructuredHandler) ListResources(ctx context.Context, req *mcp.CallTo
 			Kind:      gvk.Kind,
 			Labels:    item.GetLabels(),
 			CreatedAt: item.GetCreationTimestamp().Format(time.RFC3339),
-			Status:    status,
+			Status:    statusObj,
 		}
 		items = append(items, resourceItem)
 	}
@@ -101,18 +93,10 @@ func (h *UnstructuredHandler) GetResource(ctx context.Context, req *mcp.CallTool
 		return nil, nil, err
 	}
 
-	// Get status summary (simplified)
-	status := "Unknown"
-	if statusField, found, _ := unstructured.NestedString(result.Object, "status", "phase"); found && statusField != "" {
-		status = statusField
-	} else if readyCondition, found, _ := unstructured.NestedSlice(result.Object, "status", "conditions"); found && len(readyCondition) > 0 {
-		if condMap, ok := readyCondition[0].(map[string]interface{}); ok {
-			if condType, ok := condMap["type"].(string); ok && condType == "Ready" {
-				if condStatus, ok := condMap["status"].(string); ok {
-					status = condStatus
-				}
-			}
-		}
+	// Get full status subresource
+	var statusObj map[string]interface{}
+	if status, found, _ := unstructured.NestedMap(result.Object, "status"); found {
+		statusObj = status
 	}
 
 	output := &types.GetResourceOutput{
@@ -122,7 +106,7 @@ func (h *UnstructuredHandler) GetResource(ctx context.Context, req *mcp.CallTool
 		Namespace:  result.GetNamespace(),
 		Labels:     result.GetLabels(),
 		CreatedAt:  result.GetCreationTimestamp().Format(time.RFC3339),
-		Status:     status,
+		Status:     statusObj,
 		Manifest:   result.Object,
 	}
 

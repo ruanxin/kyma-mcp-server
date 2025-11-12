@@ -22,12 +22,12 @@ type ListResourcesInput struct {
 }
 
 type ResourceItem struct {
-	Name      string            `json:"name" jsonschema:"the name of the resource"`
-	Namespace string            `json:"namespace,omitempty" jsonschema:"the namespace of the resource"`
-	Kind      string            `json:"kind" jsonschema:"the kind of resource"`
-	Labels    map[string]string `json:"labels,omitempty" jsonschema:"labels on the resource"`
-	CreatedAt string            `json:"createdAt" jsonschema:"creation timestamp"`
-	Status    string            `json:"status,omitempty" jsonschema:"resource status summary"`
+	Name      string                 `json:"name" jsonschema:"the name of the resource"`
+	Namespace string                 `json:"namespace,omitempty" jsonschema:"the namespace of the resource"`
+	Kind      string                 `json:"kind" jsonschema:"the kind of resource"`
+	Labels    map[string]string      `json:"labels,omitempty" jsonschema:"labels on the resource"`
+	CreatedAt string                 `json:"createdAt" jsonschema:"creation timestamp"`
+	Status    map[string]interface{} `json:"status,omitempty" jsonschema:"complete status subresource as JSON"`
 }
 
 type ListResourcesOutput struct {
@@ -54,6 +54,6 @@ type GetResourceOutput struct {
 	Namespace  string                 `json:"namespace,omitempty" jsonschema:"the namespace of the retrieved resource"`
 	Labels     map[string]string      `json:"labels,omitempty" jsonschema:"labels on the resource"`
 	CreatedAt  string                 `json:"createdAt" jsonschema:"creation timestamp"`
-	Status     string                 `json:"status,omitempty" jsonschema:"resource status summary"`
+	Status     map[string]interface{} `json:"status,omitempty" jsonschema:"complete status subresource as JSON"`
 	Manifest   map[string]interface{} `json:"manifest" jsonschema:"the complete resource manifest as JSON"`
 }

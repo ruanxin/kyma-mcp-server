@@ -26,7 +26,7 @@ spec:
           # !!! IMPORTANT !!!
           # Change this to the image you built and pushed to your registry
           #
-          image: ghcr.io/ruanxin/kyma-mcp-server:e2c15928d7ea6e4cb5393eebe7d4442aa611559d
+          image: ghcr.io/ruanxin/kyma-mcp-server:41250edb13fd45ff05121f0cb7ab9fc8e2cf818a
           imagePullPolicy: Always # Good for development
 
           # Resource limits are important, even for an MVP
