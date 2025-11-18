@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,12 +21,14 @@ func (p *PDFHandler) HandlePDFResource(ctx context.Context, req *mcp.ReadResourc
 	if req == nil || req.Params.URI == "" {
 		return nil, mcp.ResourceNotFoundError("<empty>")
 	}
-
+	log.Println("req.Params.URI:", req.Params.URI)
 	// Expect URIs like embedded:api-gateway.pdf or embedded:telemetry-modules.pdf
 	fileName := strings.TrimPrefix(req.Params.URI, "embedded:")
 	if fileName == req.Params.URI { // prefix not found
 		return nil, mcp.ResourceNotFoundError(req.Params.URI)
 	}
+
+	log.Println("filename:", fileName)
 
 	full := filepath.Join(".", "resources", fileName)
 	data, err := os.ReadFile(full)
