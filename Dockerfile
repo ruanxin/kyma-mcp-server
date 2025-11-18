@@ -20,7 +20,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
 
 FROM gcr.io/distroless/static:nonroot
 WORKDIR /app
-COPY --from=builder /app/server /app/server
+# Copy the built binary (it was placed at /server in the builder stage)
+COPY --from=builder /server /app/server
+# Copy PDF/resources directory (lives under /app/resources in builder stage)
 COPY --from=builder /app/resources /app/resources
 USER nonroot
 EXPOSE 8080
