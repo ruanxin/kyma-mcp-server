@@ -1,0 +1,17 @@
+apiVersion: gateway.kyma-project.io/v2alpha1
+kind: APIRule
+metadata:
+  name: nginx-service-exposure
+  namespace: default
+spec:
+  gateway: kyma-system/kyma-gateway
+  rules:
+    - path: /
+      methods: ["GET"]
+      accessStrategies:
+        - handler: noop
+      service:
+        name: nginx-service
+        port: 80
+  hosts:
+    - host: test-nginx-kyma

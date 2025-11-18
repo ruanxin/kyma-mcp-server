@@ -43,8 +43,8 @@ func (p *PDFHandler) HandlePDFResource(ctx context.Context, req *mcp.ReadResourc
 		Contents: []*mcp.ResourceContents{
 			{
 				URI:      req.Params.URI,
-				MIMEType: "application/pdf",
-				Blob:     data,
+				MIMEType: "text/markdown",
+				Text:     string(data),
 			},
 		},
 	}, nil
