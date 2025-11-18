@@ -10,6 +10,8 @@ import (
 	"github.com/ruanxin/kyma-mcp-server/internal/k8s"
 	"github.com/ruanxin/kyma-mcp-server/internal/k8s/services"
 	"github.com/ruanxin/kyma-mcp-server/internal/mcp/handler"
+	"github.com/ruanxin/kyma-mcp-server/internal/mcp/resources"
+
 	"github.com/ruanxin/kyma-mcp-server/internal/mcp/tools"
 )
 
@@ -22,12 +24,11 @@ func main() {
 	log.Println("Kubernetes client initialized.")
 
 	// 2. Initialize the service layer
-	podService := services.NewPodService(clientset)
 	unstructuredService := services.NewUnstructedService(clientset, dynamicClient, mapper)
 
 	// 3. Initialize the handler layer
-	podHandlers := handler.NewPodHandler(podService)
-	unstructuredHandlers := handler.NewUnstructedHandler(unstructuredService)
+	unstructuredHandler := handler.NewUnstructedHandler(unstructuredService)
+	pdfHandler := handler.NewPDFHandler()
 
 	// 4. Create the MCP server
 	server := mcp.NewServer(&mcp.Implementation{
@@ -36,8 +37,8 @@ func main() {
 	}, nil)
 
 	// 5. Register all tools
-	tools.RegisterPodTools(server, podHandlers)
-	tools.RegisterUnstructedTools(server, unstructuredHandlers)
+	tools.RegisterUnstructedTools(server, unstructuredHandler)
+	resources.RegisterPDFResources(server, pdfHandler)
 	log.Println("MCP tools registered.")
 
 	// 6. Run the server
