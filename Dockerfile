@@ -19,8 +19,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
   ./cmd
 
 FROM gcr.io/distroless/static:nonroot
-COPY --from=builder /server /server
-COPY --from=builder /resources /resources
+WORKDIR /app
+COPY --from=builder /app/server /app/server
+COPY --from=builder /app/resources /app/resources
 USER nonroot
 EXPOSE 8080
-ENTRYPOINT ["/server"]
+ENTRYPOINT ["/app/server"]
